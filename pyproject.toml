@@ -1,5 +1,5 @@
 [project]
-name = "crystal-structure-detection"
+name = "local-structures-detection"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
