@@ -6,7 +6,13 @@ This repository contains molecular dynamics simulations using LAMMPS (Large-scal
 
 ```
 crystal-structure-detection/
-├── lammps_dump_files/
+├── lammps_files/
+│   ├── lammps_input.lmp
+│   ├── job_run_slurm.sh
+│   ├── colloid-eps0.table
+│   ├── colloid-eps1.table
+│   └── colloid-eps3.25.table
+├── result_dump_files/
 │   ├── mu0_eps0.xyz
 │   ├── mu0_eps1.xyz
 │   ├── mu0_eps3.25.xyz
@@ -16,10 +22,6 @@ crystal-structure-detection/
 │   ├── mu4_eps0.xyz
 │   ├── mu4_eps1.xyz
 │   └── mu4_eps3.25.xyz
-├── figures/
-│   ├── g4.pdf
-│   ├── g7.pdf
-│   └── g8.pdf
 ├── utils/
 │   ├── __init__.py
 │   ├── helpers.py
@@ -38,6 +40,19 @@ This project focuses on molecular dynamics simulations of crystal structures usi
 
 - **μ (mu)**: Represents different dipole moments or interaction parameters
 - **ε (eps)**: Represents different energy parameters or dielectric constants
+
+## Honours Thesis
+
+This repository contains the code and data for my **BSc Honours Thesis** in Physics 
+at Memorial University of Newfoundland:
+
+> *Identifying Local Structures in Dipolar Colloid-Polymer Mixtures using Machine Learning*
+
+The full thesis document is available in this repository:
+[📄 View Thesis (PDF)](./Thesis.pdf)
+
+It covers the theoretical background, simulation methodology, machine learning pipeline 
+design, and results in detail.
 
 ### Parameter Combinations Studied
 
@@ -67,17 +82,19 @@ The project includes a comprehensive Jupyter notebook (`local_structures_detecti
 
 The `utils/` directory contains helper modules for data processing and analysis:
 
-- **`helpers.py`**: General utility functions for data manipulation
-- **`process.py`**: Specialized functions for processing LAMMPS data files
+- **`helpers.py`**: Cluster merging utilities based on entropy criterion (Baudry et al.)
+- **`process.py`**: LAMMPS trajectory processing using PyScaL3 — neighbor finding, Steinhardt parameter calculation, and octant extraction
 - **`__init__.py`**: Package initialization file
 
-## 📈 Visualization
+## 📂 LAMMPS Files
 
-The project includes Gnuplot scripts for generating publication-quality plots:
+The `lammps_files/` directory contains all files required to run the simulations:
 
-- **Energy Analysis**: Plots showing potential energy, kinetic energy, total energy
-- **Thermodynamic Properties**: Pressure and temperature evolution over time
-- **Crystal Structure Visualization**: 3D representations of crystal lattices
+- **`lammps_input.lmp`**: LAMMPS input script defining the simulation protocol (atom style, force field, integrator, output settings)
+- **`job_run_slurm.sh`**: SLURM batch script for submitting simulations to an HPC cluster
+- **`colloid-eps0.table`**, **`colloid-eps1.table`**, **`colloid-eps3.25.table`**: Tabulated pair potential files for colloid interactions — one table per ε value
+
+The `result_dump_files/` directory contains the XYZ dump files output by LAMMPS after each simulation run, one per (μ, ε) parameter combination.
 
 ## 🛠️ Requirements
 
@@ -87,7 +104,7 @@ The project includes Gnuplot scripts for generating publication-quality plots:
 - **uv**: Fast Python package installer and resolver
 - **Jupyter Notebook**: For interactive analysis
 - **TensorFlow/Keras**: Machine learning framework
-- **PyScaL3**: Crystal structure analysis library
+- **PyScaL3**: Crystal structure analysis library (installed from source)
 - **Pandas**: Data manipulation and analysis
 - **Scikit-learn**: Machine learning algorithms
 - **Matplotlib/Plotly/Seaborn**: Data visualization
@@ -97,21 +114,7 @@ The project includes Gnuplot scripts for generating publication-quality plots:
 
 ### Installation
 
-This project uses [uv](https://github.com/astral-sh/uv) for fast and reliable dependency management. 
-
-#### Prerequisites
-
-1. **Install uv** (if not already installed):
-   ```bash
-   # On macOS and Linux
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   
-   # On Windows
-   powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-   
-   # Or via pip
-   pip install uv
-   ```
+This project uses [uv](https://github.com/astral-sh/uv) for fast and reliable dependency management.
 
 #### Setup Instructions
 
@@ -141,33 +144,30 @@ This project uses [uv](https://github.com/astral-sh/uv) for fast and reliable de
    # Install dependencies
    pip install -r requirements.txt
    ```
+
 ## 🚀 Usage
 
 ### Running Simulations
 
-1. **Prepare Input Files**: Create LAMMPS input scripts for your crystal system
-2. **Run Simulations**: Execute LAMMPS with your input files
-3. **Process Data**: Use the provided Jupyter notebook for analysis
-4. **Generate Plots**: Use the Gnuplot scripts for visualization
-
-### Example Workflow
-
-```bash
-# Run LAMMPS simulation
-lmp -in input.lmp
-
-# Analyze results with Jupyter
-jupyter notebook local_structures_detection.ipynb
-
-# Generate plots
-gnuplot myplot.gnu
-```
+1. **Prepare Input Files**: Edit `lammps_files/lammps_input.lmp` for your crystal system and parameter set
+2. **Submit to HPC**: Use the provided SLURM script to run on a cluster
+   ```bash
+   sbatch lammps_files/job_run_slurm.sh
+   ```
+3. **Run Locally**: Execute LAMMPS directly with the input file
+   ```bash
+   lmp -in lammps_files/lammps_input.lmp
+   ```
+4. **Process Data**: Use the provided Jupyter notebook for analysis
+   ```bash
+   jupyter notebook local_structures_detection.ipynb
+   ```
 
 ## 📚 Documentation
 
-- **Thesis**: See `Thesis.pdf` for detailed research methodology and results
+- **Thesis**: See the [Honours Thesis (PDF)](./Thesis.pdf) for complete methodology, results, and discussion. This document provides the full academic context for the code in this repository.
 - **Notebook**: The Jupyter notebook contains detailed analysis and explanations
-- **Data Files**: XYZ format files contain atomic positions and properties
+- **Data Files**: XYZ format dump files in `result_dump_files/` contain atomic positions output by LAMMPS for each parameter combination
 
 ## 🔍 Key Features
 
@@ -175,6 +175,7 @@ gnuplot myplot.gnu
 - **Octant Analysis**: Detailed spatial analysis of crystal structures
 - **Machine Learning Integration**: TensorFlow/Keras models and clustering algorithms for pattern recognition
 - **Comprehensive Visualization**: Publication-ready plots and 3D molecular visualizations
+- **HPC Support**: SLURM job script included for running on compute clusters
 - **Reproducible Research**: Complete workflow from simulation to analysis with uv dependency management
 - **Modular Design**: Well-organized utility modules for data processing and analysis
 - **Modern Python Stack**: Uses latest Python 3.12+ with modern scientific computing libraries
@@ -193,4 +194,4 @@ This is an academic research project. For questions or collaboration opportuniti
 
 ---
 
-*This project demonstrates advanced molecular dynamics simulation techniques for studying crystal structures and their properties under various conditions.* 
+*This project demonstrates advanced molecular dynamics simulation techniques for studying crystal structures and their properties under various conditions.*

@@ -1,5 +1,5 @@
 from pyscal3.traj_process import split_trajectory
-from pyscal3 import Atoms, System
+from pyscal3 import System
 import numpy as np
 from typing import List, Union
 import os
