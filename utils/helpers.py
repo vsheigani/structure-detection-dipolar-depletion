@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def _compute_delta_ent(i, j, weights):
     """
     Entropy change on merging two clusters (following Baudry).
